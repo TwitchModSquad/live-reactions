@@ -1,0 +1,85 @@
+body {
+    font-size: 1.05em;
+    line-height: 120%;
+    background-color: var(--primary-tms-color);
+    background-image: url("/assets/images/background.svg");
+    background-attachment: fixed;
+    background-size: cover;
+}
+
+footer {
+    text-align: center;
+    font-size: .75em;
+    opacity: .8;
+    margin-top: .6em;
+}
+
+a {
+    color: var(--faded-tms-color);
+}
+
+a:hover,
+a:focus-visible {
+    text-decoration: none;
+}
+
+.wrapper {
+    background-color: var(--primary-background-color);
+    color: var(--primary-text-color);
+    width: calc(100% - 4.8em);
+    max-width: 50em;
+    margin: 2em auto;
+    padding: .8em 1.2em;
+    border-radius: .3em;
+    border-top: 2px solid var(--primary-tms-color);
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+}
+
+h1, h2, h3 {
+    font-weight: 300;
+    margin: .4em 0;
+}
+
+h2, h3 {
+    border-left: 2px solid var(--primary-tms-color);
+    padding-left: .7rem;
+}
+
+h1 {
+    font-size: 1.8em;
+    text-align: center;
+}
+
+h1 small {
+    color: var(--secondary-text-color);
+}
+
+h2 {
+    font-size: 1.5em;
+}
+
+h3 {
+    font-size: 1.2em;
+}
+
+iframe {
+    width: calc(100%);
+    aspect-ratio: 2 / 1;
+}
+
+.grid {
+    display: grid;
+    gap: .8em;
+}
+
+.grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+}

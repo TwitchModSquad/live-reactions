@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Overlay</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barrio&family=Pacifico&display=swap" rel="stylesheet">
+
+    <% emoteUrls.forEach(url => { %>
+    <link rel="prefetch" href="<%= url %>"><% }) %>
+
+    <link rel="stylesheet" href="/assets/css/overlay.css">
+
+    <script src="/assets/js/jquery.js"></script>
+</head>
+<body class="font-<%= font %><%= example ? ' example' : '' %>">
+
+<div id="live-reaction" style="<%= example ? '' : 'display: none;' %>">
+    <div class="title">
+        <%= title %>
+    </div>
+    <div class="emote-info">
+        <img src="https://static-cdn.jtvnw.net/emoticons/v2/425618/default/dark/3.0" alt="emote" />
+        <div class="streak">
+            x<span>12</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    const WS_URI = "<%= wsUri %>";
+    const channel = "<%= channel %>";
+    const settings = {
+        emoteThreshold: Number("<%= settings.emoteThreshold %>"),
+        emoteWindow: Number("<%= settings.emoteWindow %>"),
+        userEmoteLimit: Number("<%= settings.userEmoteLimit %>"),
+        reactionSustainTime: Number("<%= settings.reactionSustainTime %>"),
+    };
+</script>
+<script src="/assets/js/overlay.js" async></script>
+</body>
+</html>

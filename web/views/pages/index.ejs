@@ -20,92 +20,121 @@
             <h1>Live Reactions</h1>
         </header>
         <main>
-            <h2>Grabbing your API Token</h2>
-            <p>
-                Following <a href="https://discuss.dev.twitch.com/t/giving-broadcasters-control-concurrent-join-limits-for-irc-and-eventsub/54997" target="_blank">Twitch's concurrent join limits in 2024,</a>
-                bots are severely limited on the channels they can/can't join without Moderator privileges on your channel.
-                To bypass this limit, Live Reactions requests a token from the Twitch API to listen to chat on your account
-                (and send milestone and record messages in chat). To grant Live Reactions access to this, please click the button below.
-            </p>
-            <a class="button button-full" href="/auth/twitch">
-                <% if (login) { %>
-                You're already authorized!
-                <br/>
-                <small>If you're experiencing issues, try clicking this button again.</small>
-                <% } else { %>
-                Authorize with Twitch
-                <% } %>
-            </a>
-            <p>
-                <strong>Note: </strong> This application requires a token to use the application. Failing to authorize
-                will result in an error when using the overlay.
-            </p>
-            <h2>Generating your Overlay URL</h2>
-            <p>
-                Live Reactions stores all settings in the URL entered for the overlay on OBS or other broadcasting software that supports browser windows.
-            </p>
-            <p>
-                Below is an easy-to-use generator to generate one of these URLs.
-            </p>
-            <section class="generator">
-                <h3>URL Generator</h3>
-                <div class="display">
-                    <iframe src="/overlay/devtwijn?example"></iframe>
-                </div>
-                <form id="generator" method="GET" action="/overlay/<%= login %>" target="_blank">
-                    <input type="hidden" name="example" value="true" >
-                    <div class="grid grid-2">
-                        <label>
-                            Channel Login
-                            <input type="text" name="channel" id="channel" value="<%= login ?? 'devtwijn' %>">
-                            <small>Your channel login. You may also paste in the URL when you are viewing your channel.</small>
-                        </label>
-                        <label>
-                            Reaction Title
-                            <input type="text" name="title" id="title" minlength="0" maxlength="30" value="Live Reaction">
-                            <small>The title that displays above the emote image &amp; reaction count.</small>
-                        </label>
+            <section>
+                <h2>About Live Reactions</h2>
+                <p>
+                    Live Reactions is an application that works with OBS to log streaks ("live reactions") that are
+                    triggered by your Twitch chat. It was originally built in to a commissioned project for
+                    <a href="https://twitch.tv/meiya" target="_blank">Meiya</a>,
+                    but was recently remade into a standalone service for
+                    <a href="https://twitch.tv/blondedaze" target="_blank">blondedaze</a>.
+                </p>
+                <h3>Supporting the Project</h3>
+                <p>
+                    There are several ways to support the development and sustainability of Live Reactions!
+                </p>
+                <ul>
+                    <li>
+                        <a href="https://github.com/TwitchModSquad/live-reactions" target="_blank">Contribute directly to its development. We're open sourced on GitHub!</a>
+                    </li>
+                    <li>
+                        <a href="https://buymeacoffee.com/twijn" target="_blank">Contribute monetarily directly to the developer, Twijn.</a>
+                    </li>
+                    <li>
+                        <a href="https://tms.to" target="_blank">Contribute to The Mod Squad's Patreon</a>
+                    </li>
+                </ul>
+            </section>
+            <section>
+                <h2>Grabbing your API Token</h2>
+                <p>
+                    Following <a href="https://discuss.dev.twitch.com/t/giving-broadcasters-control-concurrent-join-limits-for-irc-and-eventsub/54997" target="_blank">Twitch's concurrent join limits in 2024,</a>
+                    bots are severely limited on the channels they can/can't join without Moderator privileges on your channel.
+                    To bypass this limit, Live Reactions requests a token from the Twitch API to listen to chat on your account
+                    (and send milestone and record messages in chat). To grant Live Reactions access to this, please click the button below.
+                </p>
+                <a class="button button-full" href="/auth/twitch">
+                    <% if (login) { %>
+                    You're already authorized!
+                    <br/>
+                    <small>If you're experiencing issues, try clicking this button again.</small>
+                    <% } else { %>
+                    Authorize with Twitch
+                    <% } %>
+                </a>
+                <p>
+                    <strong>Note: </strong> This application requires a token to use the application. Failing to authorize
+                    will result in an error when using the overlay.
+                </p>
+            </section>
+            <section>
+                <h2>Generating your Overlay URL</h2>
+                <p>
+                    Live Reactions stores all settings in the URL entered for the overlay on OBS or other broadcasting software that supports browser windows.
+                </p>
+                <p>
+                    Below is an easy-to-use generator to generate one of these URLs.
+                </p>
+                <article class="generator">
+                    <h3>URL Generator</h3>
+                    <div class="display">
+                        <iframe src="/overlay/devtwijn?example"></iframe>
                     </div>
-                    <div class="grid grid-2">
+                    <form id="generator" method="GET" action="/overlay/<%= login %>" target="_blank">
+                        <input type="hidden" name="example" value="true" >
+                        <div class="grid grid-2">
+                            <label>
+                                Channel Login
+                                <input type="text" name="channel" id="channel" value="<%= login ?? 'devtwijn' %>">
+                                <small>Your channel login. You may also paste in the URL when you are viewing your channel.</small>
+                            </label>
+                            <label>
+                                Reaction Title
+                                <input type="text" name="title" id="title" minlength="0" maxlength="30" value="Live Reaction">
+                                <small>The title that displays above the emote image &amp; reaction count.</small>
+                            </label>
+                        </div>
+                        <div class="grid grid-2">
+                            <label>
+                                Emote Threshold
+                                <input type="number" name="emote_threshold" id="emote_threshold" required="required" min="1" max="100" step="1" value="3">
+                                <small>The number of messages with a specified emote required to start a Live Reaction.</small>
+                            </label>
+                            <label>
+                                Emote Window
+                                <input type="number" name="emote_window" id="emote_window" required="required" min="5" max="100" step=".5" value="10">
+                                <small>The number of seconds an emote has to reach the Emote Threshold to start a Live Reaction.</small>
+                            </label>
+                        </div>
+                        <div class="grid grid-2">
+                            <label>
+                                User Emote Limit
+                                <input type="number" name="user_emote_limit" id="user_emote_limit" required="required" min="1" max="100" step="1" value="2">
+                                <small>The message limit per user that can count towards the Emote Window. This prevents a single user from starting a Live Reaction. <em>If this number is greater than the Emote Threshold, a single user can always start a Live Reaction.</em></small>
+                            </label>
+                            <label>
+                                Reaction Sustain Time
+                                <input type="number" name="reaction_sustain_time" id="reaction_sustain_time" required="required" min="5" max="100" step=".5" value="10">
+                                <small>After a Live Reaction has started, this is the time in which another message with the emote must be sent to continue the Live Reaction.</small>
+                            </label>
+                        </div>
                         <label>
-                            Emote Threshold
-                            <input type="number" name="emote_threshold" id="emote_threshold" required="required" min="1" max="100" step="1" value="3">
-                            <small>The number of messages with a specified emote required to start a Live Reaction.</small>
+                            Font / Theme
+                            <select name="font">
+                                <option value="archivo-black">Archivo Black</option>
+                                <option value="pacifico">Pacifico</option>
+                                <option value="barrio">Barrio</option>
+                                <option value="blondedaze">Theme - blondedaze</option>
+                            </select>
                         </label>
                         <label>
-                            Emote Window
-                            <input type="number" name="emote_window" id="emote_window" required="required" min="5" max="100" step=".5" value="10">
-                            <small>The number of seconds an emote has to reach the Emote Threshold to start a Live Reaction.</small>
+                            Result URL
+                            <input type="text" id="url" disabled="disabled">
+                            <button class="button" type="button" id="copy">Copy to Clipboard</button>
                         </label>
-                    </div>
-                    <div class="grid grid-2">
-                        <label>
-                            User Emote Limit
-                            <input type="number" name="user_emote_limit" id="user_emote_limit" required="required" min="1" max="100" step="1" value="2">
-                            <small>The message limit per user that can count towards the Emote Window. This prevents a single user from starting a Live Reaction. <em>If this number is greater than the Emote Threshold, a single user can always start a Live Reaction.</em></small>
-                        </label>
-                        <label>
-                            Reaction Sustain Time
-                            <input type="number" name="reaction_sustain_time" id="reaction_sustain_time" required="required" min="5" max="100" step=".5" value="10">
-                            <small>After a Live Reaction has started, this is the time in which another message with the emote must be sent to continue the Live Reaction.</small>
-                        </label>
-                    </div>
-                    <label>
-                        Font / Theme
-                        <select name="font">
-                            <option value="archivo-black">Archivo Black</option>
-                            <option value="pacifico">Pacifico</option>
-                            <option value="barrio">Barrio</option>
-                            <option value="blondedaze">Theme - blondedaze</option>
-                        </select>
-                    </label>
-                    <label>
-                        Result URL
-                        <input type="text" id="url" disabled="disabled">
-                        <button class="button" type="button" id="copy">Copy to Clipboard</button>
-                    </label>
-                    <button class="button" type="submit">View in New Window</button>
-                </form>
+                        <button class="button" type="submit">View in New Window</button>
+                    </form>
+                </article>
             </section>
         </main>
         <footer>

@@ -37,7 +37,7 @@ class ClientManager {
 
         let listenClient = this.activeClients.find(x => x.channel === channel);
 
-        if (!listenClient) {
+        // if (!listenClient) {
             listenClient = new ListenClient(channel);
             try {
                 await listenClient.connect();
@@ -45,7 +45,7 @@ class ClientManager {
                 throw err;
             }
             this.activeClients.push(listenClient);
-        }
+        // }
 
         listenClient.addWebsocket(ws);
     }

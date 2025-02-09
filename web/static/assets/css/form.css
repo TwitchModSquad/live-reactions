@@ -36,6 +36,7 @@ label {
 }
 
 label small {
+    display: block;
     color: var(--secondary-text-color);
 }
 

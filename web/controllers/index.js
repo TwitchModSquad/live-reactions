@@ -2,8 +2,12 @@ import { Router } from "express";
 const router = Router();
 
 router.get("/", (req, res) => {
+    res.render("pages/index");
+});
+
+router.get("/generator", (req, res) => {
     const login = req?.query?.login;
-    res.render("pages/index", {login, uri: process.env.URI});
+    res.render("pages/generator", {login, uri: process.env.URI});
 });
 
 import auth from "./auth/index.js";

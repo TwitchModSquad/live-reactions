@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <%- include("../partials/head") %>
+
+    <link rel="stylesheet" href="/assets/css/home.css">
+    <link rel="stylesheet" href="/assets/css/form.css">
+
+    <script>
+        const BASE_URI = "<%= uri %>";
+    </script>
+    <script src="/assets/js/url-generator.js" async="async"> </script>
+
+    <title>Generator | Live Reactions | The Mod Squad</title>
+</head>
+<body>
+<div class="wrapper">
+    <header>
+        <h1>Live Reactions Generator</h1>
+    </header>
+    <main>
+        <a href="/" class="button button-full">Go back to the homepage</a>
+        <section class="generator">
+            <div class="display">
+                <iframe src="/overlay/devtwijn?example"></iframe>
+            </div>
+            <form id="generator" method="GET" action="/overlay/<%= login %>" target="_blank">
+                <input type="hidden" name="example" value="true" >
+                <div class="grid grid-2">
+                    <label>
+                        Channel Login
+                        <input type="text" name="channel" id="channel" value="<%= login ?? 'devtwijn' %>" disabled="disabled">
+                        <small>Your channel login.</small>
+                    </label>
+                    <label>
+                        Reaction Title
+                        <input type="text" name="title" id="title" minlength="0" maxlength="30" value="Live Reaction">
+                        <small>The title that displays above the emote image &amp; reaction count.</small>
+                    </label>
+                </div>
+                <div class="grid grid-2">
+                    <label>
+                        Emote Threshold
+                        <input type="number" name="emote_threshold" id="emote_threshold" required="required" min="1" max="100" step="1" value="3">
+                        <small>The number of messages with a specified emote required to start a Live Reaction.</small>
+                    </label>
+                    <label>
+                        Emote Window
+                        <input type="number" name="emote_window" id="emote_window" required="required" min="5" max="100" step=".5" value="10">
+                        <small>The number of seconds an emote has to reach the Emote Threshold to start a Live Reaction.</small>
+                    </label>
+                </div>
+                <div class="grid grid-2">
+                    <label>
+                        User Emote Limit
+                        <input type="number" name="user_emote_limit" id="user_emote_limit" required="required" min="1" max="100" step="1" value="2">
+                        <small>The message limit per user that can count towards the Emote Window. This prevents a single user from starting a Live Reaction. <em>If this number is greater than the Emote Threshold, a single user can always start a Live Reaction.</em></small>
+                    </label>
+                    <label>
+                        Reaction Sustain Time
+                        <input type="number" name="reaction_sustain_time" id="reaction_sustain_time" required="required" min="5" max="100" step=".5" value="10">
+                        <small>After a Live Reaction has started, this is the time in which another message with the emote must be sent to continue the Live Reaction.</small>
+                    </label>
+                </div>
+                <label>
+                    Font / Theme
+                    <select name="font">
+                        <option value="archivo-black">Archivo Black</option>
+                        <option value="pacifico">Pacifico</option>
+                        <option value="barrio">Barrio</option>
+                        <option value="blondedaze">Theme - blondedaze</option>
+                    </select>
+                </label>
+                <label>
+                    Result URL
+                    <input type="text" id="url" disabled="disabled">
+                    <small>Copy and paste this URL into a browser element in your favorite broadcasting software!</small>
+                    <button class="button" type="button" id="copy">Copy to Clipboard</button>
+                </label>
+                <button class="button" type="submit">View in New Window</button>
+            </form>
+        </section>
+    </main>
+    <%- include("../partials/footer") %>
+</div>
+</body>
+</html>

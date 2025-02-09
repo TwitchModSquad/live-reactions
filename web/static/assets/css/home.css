@@ -83,3 +83,8 @@ iframe {
 .grid-4 {
     grid-template-columns: repeat(4, 1fr);
 }
+
+iframe {
+    border: none;
+    border-radius: .3em;
+}

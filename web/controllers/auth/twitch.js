@@ -30,7 +30,7 @@ router.get("/", async (req, res) => {
                 new: true,
             });
 
-            res.redirect(`/?login=${helixUser.name}`);
+            res.redirect(`/generator?login=${helixUser.name}`);
         }, err => {
             res.redirect(TWITCH_URI);
         });

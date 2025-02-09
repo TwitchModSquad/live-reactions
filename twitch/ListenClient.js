@@ -93,7 +93,7 @@ export class ListenClient {
      */
     sendChatMessage(message) {
         api.asIntent([this.getIntent()], ctx => {
-            ctx.chat.sendChatMessage(this.channelId, message);
+            ctx.chat.sendChatMessage(this.channelId, message).catch(console.error);
         });
     }
 

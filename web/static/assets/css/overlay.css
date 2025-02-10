@@ -59,6 +59,16 @@ body.example {
     font-family: "Barrio", serif;
 }
 
+.font-blondedaze #live-reaction {
+    font-family: "Archivo Black", sans-serif;
+}
+
+.font-blondedaze #live-reaction .title,
+.font-blondedaze #live-reaction .emote-info .streak {
+    color: white;
+    -webkit-text-stroke: 2px #fec7eb;
+}
+
 #live-reaction .title {
     font-size: clamp(1em, 7.4vw, 8em);
     transform: scale(1, 1.5);

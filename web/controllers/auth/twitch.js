@@ -3,6 +3,7 @@ const router = new Router();
 
 import { authProvider, api } from "../../../twitch/auth.js";
 import TwitchToken from "../../../schemas/TwitchToken.js";
+import TwitchUser from "../../../schemas/TwitchUser.js";
 
 const TWITCH_SCOPES = [
     "chat:read",
@@ -23,9 +24,25 @@ router.get("/", async (req, res) => {
                 return;
             }
 
+            const twitchUser = await TwitchUser.findByIdAndUpdate(helixUser.id, {
+                $set: {
+                    login: helixUser.name,
+                    display_name: helixUser.displayName,
+                    type: helixUser.type,
+                    broadcaster_type: helixUser.broadcasterType,
+                    description: helixUser.description,
+                    profile_image_url: helixUser.profilePictureUrl,
+                    offline_image_url: helixUser.offlinePlaceholderUrl,
+                    updated_at: Date.now(),
+                },
+            }, {
+                upsert: true,
+                new: true,
+            });
+
             await TwitchToken.findOneAndUpdate({
-                user: tokenData.userId,
-            }, { $set: { userLogin: helixUser.name, tokenData }}, {
+                user: twitchUser._id,
+            }, { $set: { tokenData }}, {
                 upsert: true,
                 new: true,
             });

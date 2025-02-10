@@ -9,10 +9,6 @@ const schema = new mongoose.Schema({
         type: String,
         index: true,
     },
-    bot: {
-        type: Boolean,
-        default: false,
-    },
     tokenData: {
         accessToken: {
             type: String,

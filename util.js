@@ -194,7 +194,7 @@ class Util {
      * @returns {string} The formatted duration
      */
     formatDuration(duration, iterations = 2, count = 1) {
-        let result = " ";
+        let result = "";
         if (duration >= SECOND_TO_WEEK) {
             const converted = Math.floor(duration / SECOND_TO_WEEK);
             duration -= converted * SECOND_TO_WEEK;
@@ -216,7 +216,7 @@ class Util {
             duration = 0;
         }
         if (count < iterations && duration > 0) {
-            result += this.formatDuration(duration, iterations, ++count);
+            result += " " + this.formatDuration(duration, iterations, ++count);
         }
         return result.trim();
     }

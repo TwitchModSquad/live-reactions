@@ -14,3 +14,9 @@
 .large-wrapper .main-wrapper {
     grid-column: 2;
 }
+
+@media only screen and (max-width: 900px) {
+    .large-wrapper {
+        display: block;
+    }
+}

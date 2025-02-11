@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <%- include("../partials/head") %>
+
+    <link rel="stylesheet" href="/assets/css/home.css">
+    <link rel="stylesheet" href="/assets/css/form.css">
+    <link rel="stylesheet" href="/assets/css/settings.css">
+
+    <script>
+        const BASE_URI = "<%= uri %>";
+    </script>
+    <script src="/assets/js/settings.js" async="async"> </script>
+
+    <title>Settings | Live Reactions | The Mod Squad</title>
+</head>
+<body>
+<div class="large-wrapper">
+    <div class="wrapper">
+        <div class="display">
+            <iframe src="/overlay?token=<%= token.id %>&example"></iframe>
+            <small>The recommended screen ratio for Live Reactions is 2:1</small>
+        </div>
+        <label>
+            Result URL
+            <input type="text" id="url" value="<%= uri %>overlay?token=<%= token.id %>" disabled="disabled">
+            <small>
+                <strong>Do not share your token or URL with anyone!</strong>
+                <br>
+                Copy and paste this URL into a browser element in your favorite broadcasting software!
+            </small>
+            <button class="button button-full" type="button" id="copy">Copy to Clipboard</button>
+        </label>
+    </div>
+    <div class="wrapper main-wrapper">
+        <%- include("../partials/header", {title: "Manage Live Reactions" }) %>
+        <main>
+            <div id="alerts">
+                <div class="alert alert-info">
+                    Updating settings for <%= user.display_name %>
+                </div>
+            </div>
+            <h2>Update Settings</h2>
+            <section class="generator">
+                <form id="generator" method="GET">
+                    <input type="hidden" name="token" value="<%= token.id %>">
+                    <div class="grid grid-2">
+                        <% settings.forEach(setting => { %>
+                        <%- include("../partials/setting.ejs", {setting, currentSettings: user.settings }) %>
+                        <% }) %>
+                    </div>
+                    <button class="button button-full" type="submit">Save</button>
+                </form>
+            </section>
+        </main>
+        <%- include("../partials/footer") %>
+    </div>
+</div>
+</body>
+</html>

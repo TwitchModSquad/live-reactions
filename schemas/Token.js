@@ -1,21 +1,22 @@
 import mongoose from "mongoose";
 
 const schema = new mongoose.Schema({
+    _id: {
+        type: String,
+    },
     user: {
         type: String,
         ref: "TwitchUser",
     },
-    tokenData: {
-        accessToken: {
-            type: String,
-            required: true,
-        },
-        expiresIn: Number,
-        obtainmentTimestamp: Number,
-        refreshToken: String,
-        scope: [String],
+    created_at: {
+        type: Date,
+        default: Date.now,
+    },
+    used_at: {
+        type: Date,
+        default: Date.now,
     },
 });
 
-export default mongoose.model("TwitchToken", schema);
+export default mongoose.model("Token", schema);
 

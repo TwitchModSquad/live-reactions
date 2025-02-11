@@ -1,0 +1,37 @@
+<%
+const value = currentSettings.hasOwnProperty(setting.id) ? currentSettings[setting.id] : setting.default;
+%><label>
+    <%= setting.label %>
+    <% if (["text","number"].includes(setting.type)) { %>
+    <input
+            type="<%= setting.type %>" name="<%= setting.id %>" id="<%= setting.id %>"
+            <% if (setting.minlength) { %>
+            minlength="<%= setting.minlength %>"
+            <% } if (setting.maxlength) { %>
+            maxlength="<%= setting.maxlength %>"
+            <% } if (setting.min) { %>
+            min="<%= setting.min %>"
+            <% } if (setting.max) { %>
+            max="<%= setting.max %>"
+            <% } if (setting.step) { %>
+            step="<%= setting.step %>"
+            <% } if (setting.required) { %>
+            required="required"
+            <% } %>
+            value="<%= value %>"
+    >
+    <% } else if (setting.type === "select") { if (setting.optgroup) { %>
+    <select id="<%=setting.id%>" name="<%= setting.id %>">
+        <% setting.optgroup.forEach(group => { %>
+        <optgroup label="<%= group.label %>">
+            <% group.opts.forEach(opt => { %>
+            <option value="<%= opt.value %>"<%- value === opt.value ? ' selected="selected"' : '' %>><%= opt.name %></option>
+            <% }) %>
+        </optgroup>
+        <% }) %>
+    </select>
+    <% } } %>
+    <% if (setting.small) { %>
+    <small><%= setting.small %></small>
+    <% } %>
+</label>

@@ -1,5 +1,29 @@
 import mongoose from "mongoose";
 
+import util from "../util.js";
+
+const settings = {};
+
+util.settings.forEach(setting => {
+    let type = null;
+    switch (setting.type) {
+        case "number":
+            type = Number;
+            break;
+        default:
+            type = String;
+    }
+
+    settings[setting.id] = {
+        type,
+        default: setting.default,
+    }
+
+    if (setting?.optgroup) {
+        settings[setting.id].enum = util.getPossibleSelectValues(setting);
+    }
+});
+
 const schema = new mongoose.Schema({
     _id: {
         type: String,
@@ -31,8 +55,10 @@ const schema = new mongoose.Schema({
     description: String,
     profile_image_url: String,
     offline_image_url: String,
+    settings,
     created_at: {
         type: Date,
+        default: Date.now,
     },
     updated_at: {
         type: Date,

@@ -9,6 +9,16 @@ const { Emote } = emotes;
 
 import ReactionLog from "../schemas/ReactionLog.js";
 
+/**
+ * @typedef {Object} Settings
+ * @property {string} title
+ * @property {string} font
+ * @property {number} emote_window
+ * @property {number} user_emote_limit
+ * @property {number} emote_threshold
+ * @property {number} reaction_sustain_time
+ */
+
 export class ListenClient {
 
     /**
@@ -18,16 +28,9 @@ export class ListenClient {
     client;
 
     /**
-     * The channel this ListenClient is connected to.
-     * @type {string}
+     * The user this ListenClient is connected to.
      */
-    channel;
-
-    /**
-     * The Channel ID the ListenClient is listening to. Not populated until the first message is sent.
-     * @type {string}
-     */
-    channelId;
+    user;
 
     /**
      * The next Websocket ID
@@ -58,13 +61,15 @@ export class ListenClient {
 
     /**
      * Current settings for the ListenClient
-     * @type {{emoteWindow: number, userEmoteLimit: number, emoteThreshold: number, reactionSustainTime: number}}
+     * @type {Settings}
      */
     settings = {
-        emoteThreshold: 3,
-        emoteWindow: 10,
-        userEmoteLimit: 2,
-        reactionSustainTime: 10,
+        title: "Live Reaction",
+        font: "archivo-black",
+        emote_threshold: 3,
+        emote_window: 10,
+        user_emote_limit: 2,
+        reaction_sustain_time: 10,
     };
 
     /**
@@ -84,7 +89,7 @@ export class ListenClient {
      * @returns {string}
      */
     getIntent() {
-        return `chat:${this.channel}`;
+        return `chat:${this.user.login}`;
     }
 
     /**
@@ -93,7 +98,20 @@ export class ListenClient {
      */
     sendChatMessage(message) {
         api.asIntent([this.getIntent()], ctx => {
-            ctx.chat.sendChatMessage(this.channelId, message).catch(console.error);
+            ctx.chat.sendChatMessage(this.user.id, message).catch(console.error);
+        });
+    }
+
+    /**
+     * Broadcasts the message to all websockets
+     * @param message {any}
+     */
+    broadcastWebsocketMessage(message) {
+        if (typeof message === "object") {
+            message = JSON.stringify(message);
+        }
+        this.websockets.forEach(ws => {
+            ws.ws.send(message);
         });
     }
 
@@ -103,12 +121,10 @@ export class ListenClient {
      * @param count {number}
      */
     announceEmote(emote, count) {
-        this.websockets.forEach(ws => {
-            ws.ws.send(JSON.stringify({
-                type: "live-reaction",
-                emoteImageUrl: emote.toLink(2),
-                count,
-            }));
+        this.broadcastWebsocketMessage({
+            type: "live-reaction",
+            emoteImageUrl: emote.toLink(2),
+            count,
         });
 
         if (count % 100 === 0) {
@@ -133,7 +149,7 @@ export class ListenClient {
         this.emoteLog = [];
 
         const highestReaction = await ReactionLog
-            .find({channelId: this.channelId})
+            .find({channelId: this.user.id})
             .sort({ count: -1 })
             .limit(1);
 
@@ -145,7 +161,7 @@ export class ListenClient {
         }
 
         await ReactionLog.create({
-            channelId: this.channelId,
+            channelId: this.user.id,
             emoteId: reaction.emote.id,
             count: reaction.count,
             startTime: reaction.startTime,
@@ -179,8 +195,11 @@ export class ListenClient {
      * @param chatterId {string}
      */
     async logEmote(emote, chatterId) {
+        // Check if there is an active reaction
         if (this.activeReaction) {
+            // Check if the reaction has finished
             if (this.activeReaction.endTime > Date.now()) {
+                // Check if the active reaction emote is the same as the emote sent
                 if (this.activeReaction.emote.id === emote.id) {
                     this.announceEmote(emote, ++this.activeReaction.count);
                     this.activeReaction.endTime = Date.now() + (this.settings.reactionSustainTime * 1000);
@@ -239,35 +258,42 @@ export class ListenClient {
             }
 
             if (emote) {
-                this.logEmote(emote, user);
+                this.logEmote(emote, user).catch(console.error);
             }
         }
     }
 
     /**
-     * Constructor for a ListenClient.
-     * @param channel {string}
+     * Updates the settings in the ListenClient
+     * @param settings {Settings}
      */
-    constructor(channel) {
-        this.channel = channel;
+    updateSettings(settings) {
+        this.settings = settings;
+        this.broadcastWebsocketMessage({
+            type: "update-settings",
+            settings,
+        });
+    }
+
+    /**
+     * Constructor for a ListenClient.
+     * @param user {any}
+     * @param settings {Settings}
+     */
+    constructor(user, settings) {
+        this.user = user;
+        this.settings = settings;
 
         this.client = new ChatClient({
             authProvider,
             authIntents: [this.getIntent()],
-            channels: [channel],
+            channels: [this.user.login],
         });
 
-        this.client.onMessage(async (chnl, user, text, msg) => {
-            if (!this.channelId) {
-                this.channelId = msg.channelId;
-            }
+        this.fetchEmotes().catch(console.error);
 
-            if (!this.emotesFetched) {
-                await this.fetchEmotes(msg.channelId);
-                this.emotesFetched = true;
-            }
-
-            this.handleMessage(chnl, user, text, msg);
+        this.client.onMessage((channel, user, text, msg) => {
+            this.handleMessage(channel, user, text, msg);
         });
 
         setInterval(() => {
@@ -281,15 +307,14 @@ export class ListenClient {
 
     /**
      * Fetches the emotes of the user
-     * @param channelId
      * @returns {Promise<void>}
      */
-    fetchEmotes(channelId) {
-        return fetchEmotes(channelId);
+    fetchEmotes() {
+        return fetchEmotes(this.user.id);
     }
 
     connect() {
-        console.log(`[ListenClient] Connecting with ListenClient ${this.channel}...`);
+        console.log(`[ListenClient] Connecting with ListenClient ${this.user.login}...`);
         return new Promise((resolve, reject) => {
             const disconnectListener = this.client.onTokenFetchFailure((error) => {
                 this.client.quit();

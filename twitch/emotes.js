@@ -18,7 +18,6 @@ export const fetchEmotes = async (channelId = null) => {
         await fetcher.fetchBTTVEmotes(channelId);
     } catch(err) {
         console.error("Failed to fetch global BTTV emotes.");
-        console.error(err);
     }
 
     try {
@@ -26,7 +25,6 @@ export const fetchEmotes = async (channelId = null) => {
         await fetcher.fetchFFZEmotes(channelId);
     } catch(err) {
         console.error("Failed to fetch global FFZ emotes.");
-        console.error(err);
     }
 
     try {
@@ -34,7 +32,6 @@ export const fetchEmotes = async (channelId = null) => {
         await fetcher.fetchSevenTVEmotes(channelId);
     } catch(err) {
         console.error("Failed to fetch 7TV emotes.");
-        console.error(err);
     }
 
     try {
@@ -42,7 +39,6 @@ export const fetchEmotes = async (channelId = null) => {
         await fetcher.fetchTwitchEmotes(channelId);
     } catch(err) {
         console.error("Failed to fetch Twitch emotes.");
-        console.error(err);
     }
 }
 

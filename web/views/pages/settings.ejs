@@ -36,12 +36,31 @@
     <div class="wrapper main-wrapper">
         <%- include("../partials/header", {title: "Manage Live Reactions" }) %>
         <main>
-            <div id="alerts">
-                <div class="alert alert-info">
-                    Updating settings for <%= user.display_name %>
-                </div>
+            <div class="alert alert-info">
+                Updating settings for <%= user.display_name %>
             </div>
+            <h2>Update Settings</h2>
+            <p>
+                Use the form below to update Live Reaction settings to your liking. Updating on this page will
+                automatically update any overlays you have open.
+            </p>
+            <section class="generator">
+                <div id="alerts"></div>
+                <form id="generator" method="GET">
+                    <input type="hidden" name="token" value="<%= token.id %>">
+                    <div class="grid grid-2">
+                        <% settings.forEach(setting => { %>
+                        <%- include("../partials/setting.ejs", {setting, currentSettings: user.settings }) %>
+                        <% }) %>
+                    </div>
+                    <button class="button button-full" type="submit">Save</button>
+                </form>
+            </section>
             <h2>Reaction Logs</h2>
+            <p>
+                You can view statistics below on top Live Reactions that have occurred on your channel.
+                Additionally, you can delete all of your current reactions.
+            </p>
             <div id="delete-alerts"></div>
             <p>
                 <strong>Total Reactions:</strong> <span id="reactions"><%= util.comma(reactionLogs.length) %></span>
@@ -57,18 +76,6 @@
             <div class="alert alert-info" id="no-logs" style="<%= reactionLogs.length > 0 ? 'display: none;' : '' %>">
                 You currently have no previous reaction logs!
             </div>
-            <h2>Update Settings</h2>
-            <section class="generator">
-                <form id="generator" method="GET">
-                    <input type="hidden" name="token" value="<%= token.id %>">
-                    <div class="grid grid-2">
-                        <% settings.forEach(setting => { %>
-                        <%- include("../partials/setting.ejs", {setting, currentSettings: user.settings }) %>
-                        <% }) %>
-                    </div>
-                    <button class="button button-full" type="submit">Save</button>
-                </form>
-            </section>
         </main>
         <%- include("../partials/footer") %>
     </div>

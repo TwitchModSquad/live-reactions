@@ -1,5 +1,7 @@
 import express from "express";
 import {fetcher} from "../../twitch/emotes.js";
+import util from "../../util.js";
+
 const router = express.Router();
 
 router.get("/", (req, res) => {
@@ -30,6 +32,7 @@ router.get("/", (req, res) => {
         title,
         font,
         token: req.token,
+        startTime: util.startTime,
     });
 });
 

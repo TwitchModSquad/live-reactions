@@ -41,6 +41,22 @@
                     Updating settings for <%= user.display_name %>
                 </div>
             </div>
+            <h2>Reaction Logs</h2>
+            <div id="delete-alerts"></div>
+            <p>
+                <strong>Total Reactions:</strong> <span id="reactions"><%= util.comma(reactionLogs.length) %></span>
+                <br>
+                <button type="button" id="delete-reactions" class="button button-danger">Delete All Reactions</button>
+            </p>
+            <h3>Top Reactions</h3>
+            <div id="top-reactions">
+                <% reactionLogs.forEach((reactionLog, i) => { if (i >= 3) return; %>
+                <%- include("../partials/reactionLog", { reactionLog, util }) %>
+                <% }) %>
+            </div>
+            <div class="alert alert-info" id="no-logs" style="<%= reactionLogs.length > 0 ? 'display: none;' : '' %>">
+                You currently have no previous reaction logs!
+            </div>
             <h2>Update Settings</h2>
             <section class="generator">
                 <form id="generator" method="GET">

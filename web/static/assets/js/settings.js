@@ -9,6 +9,7 @@ $(function() {
     const font = $("#font");
 
     const alerts = $("#alerts");
+    const deleteAlerts = $("#delete-alerts");
 
     let currentAlert = null;
 
@@ -35,6 +36,30 @@ $(function() {
         } else {
             resultUrl.select();
             document.execCommand('copy');
+        }
+    });
+
+    $("#delete-reactions").on("click", function() {
+        const confirmed = confirm("Are you sure you want to delete all reaction logs?\nThis can't be undone!");
+        if (confirmed) {
+            $.ajax("/api/reactionlogs/all", {
+                method: "DELETE",
+                success: function() {
+                    const { close } = showAlert(deleteAlerts, "success", "Successfully deleted all reaction logs!");
+                    $("#reactions").text("0");
+                    $("#top-reactions").text("");
+                    $("#no-logs").slideDown(250);
+                    setInterval(function() {
+                        close();
+                    }, 2500);
+                },
+                error: function(xhr, status) {
+                    const { close } = showAlert(deleteAlerts, "danger", "Failed to delete all reaction logs!");
+                    setInterval(function() {
+                        close();
+                    }, 2500);
+                },
+            });
         }
     });
 

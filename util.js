@@ -1,3 +1,8 @@
+const SECOND_TO_MINUTE = 60;
+const SECOND_TO_HOUR = 60 * SECOND_TO_MINUTE;
+const SECOND_TO_DAY = 24 * SECOND_TO_HOUR;
+const SECOND_TO_WEEK = 7 * SECOND_TO_DAY;
+
 class Util {
     /**
      * Converts a number into a string with commas
@@ -171,10 +176,49 @@ class Util {
         }
     }
 
+    /**
+     * Validates settings
+     * @param input {any}
+     */
     validateSettings(input) {
         this.settings.forEach(setting => {
             this.validateSetting(setting, input[setting.id]);
         });
+    }
+
+    /**
+     * Will format a number duration into a string
+     * @param duration {number} Duration in seconds
+     * @param iterations {number?} How many iterations to go through
+     * @param count {number?} Number of iterations
+     * @returns {string} The formatted duration
+     */
+    formatDuration(duration, iterations = 2, count = 1) {
+        let result = " ";
+        if (duration >= SECOND_TO_WEEK) {
+            const converted = Math.floor(duration / SECOND_TO_WEEK);
+            duration -= converted * SECOND_TO_WEEK;
+            result += `${converted} week${converted === 1 ? "" : "s"}`;
+        } else if (duration >= SECOND_TO_DAY) {
+            const converted = Math.floor(duration / SECOND_TO_DAY);
+            duration -= converted * SECOND_TO_DAY;
+            result += `${converted} day${converted === 1 ? "" : "s"}`;
+        } else if (duration >= SECOND_TO_HOUR) {
+            const converted = Math.floor(duration / SECOND_TO_HOUR);
+            duration -= converted * SECOND_TO_HOUR;
+            result += `${converted} hour${converted === 1 ? "" : "s"}`;
+        } else if (duration >= SECOND_TO_MINUTE) {
+            const converted = Math.floor(duration / SECOND_TO_MINUTE);
+            duration -= converted * SECOND_TO_MINUTE;
+            result += `${converted} week${converted === 1 ? "" : "s"}`;
+        } else {
+            result += `${duration} second${duration === 1 ? "" : "s"}`;
+            duration = 0;
+        }
+        if (count < iterations && duration > 0) {
+            result += this.formatDuration(duration, iterations, ++count);
+        }
+        return result.trim();
     }
 
     /**

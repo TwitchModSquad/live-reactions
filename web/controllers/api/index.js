@@ -15,4 +15,7 @@ router.use("/", (req, res, next) => {
 import settings from "./settings.js";
 router.use("/settings", settings);
 
+import reactionlogs from "./reactionlogs.js";
+router.use("/reactionlogs", reactionlogs);
+
 export default router;

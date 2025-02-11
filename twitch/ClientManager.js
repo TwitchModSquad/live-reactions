@@ -15,7 +15,7 @@ class ClientManager {
     async createClients() {
         const users = await TwitchUser.find({});
         users.forEach(user => {
-            const listenClient = new ListenClient(user);
+            const listenClient = new ListenClient(user, user.settings);
             this.activeClients.push(listenClient);
             listenClient.connect().catch(console.error);
         });
@@ -63,7 +63,7 @@ class ClientManager {
         let listenClient = this.activeClients.find(x => x.user.id === token.user.id);
 
         if (!listenClient) {
-            listenClient = new ListenClient(token.user);
+            listenClient = new ListenClient(token.user, token.user.settings);
             try {
                 await listenClient.connect();
             } catch(err) {

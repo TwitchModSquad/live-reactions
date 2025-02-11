@@ -181,7 +181,7 @@ export class ListenClient {
         let logs = [];
         emoteLogs.forEach(log => {
             userLogs.push(log.chatterId);
-            if (userLogs.filter(x => x === log.chatterId).length <= this.settings.userEmoteLimit) {
+            if (userLogs.filter(x => x === log.chatterId).length <= this.settings.user_emote_limit) {
                 logs.push(log);
             }
         });
@@ -202,7 +202,7 @@ export class ListenClient {
                 // Check if the active reaction emote is the same as the emote sent
                 if (this.activeReaction.emote.id === emote.id) {
                     this.announceEmote(emote, ++this.activeReaction.count);
-                    this.activeReaction.endTime = Date.now() + (this.settings.reactionSustainTime * 1000);
+                    this.activeReaction.endTime = Date.now() + (this.settings.reaction_sustain_time * 1000);
                 }
                 return;
             } else {
@@ -217,11 +217,11 @@ export class ListenClient {
         });
 
         const count = this.calculateCount(emote.id);
-        if (count >= this.settings.emoteThreshold) {
+        if (count >= this.settings.emote_threshold) {
             this.activeReaction = {
                 emote, count,
                 startTime: Date.now(),
-                endTime: Date.now() + (this.settings.reactionSustainTime * 1000),
+                endTime: Date.now() + (this.settings.reaction_sustain_time * 1000),
             };
             console.log(`[ListenClient:${this.getIntent()}] Started new ${emote.code} reaction`);
             this.announceEmote(emote, count);
@@ -298,7 +298,7 @@ export class ListenClient {
 
         setInterval(() => {
             this.emoteLog = this.emoteLog
-                .filter(x => x.time >= Date.now() - (this.settings.emoteWindow * 1000));
+                .filter(x => x.time >= Date.now() - (this.settings.emote_window * 1000));
             if (this.activeReaction && this.activeReaction.endTime < Date.now()) {
                 this.stopReaction().catch(console.error);
             }
@@ -349,28 +349,6 @@ export class ListenClient {
         console.log(`[ListenClient:${this.getIntent()}] Connected Websocket ID ${obj.id}`);
 
         this.websockets.push(obj);
-
-        ws.on("message", msg => {
-            try {
-                msg = JSON.parse(Buffer.from(msg).toString("utf8"));
-                if (msg.type === "settings") {
-                    const settings = msg?.settings;
-                    if (settings &&
-                        typeof settings?.emoteThreshold === "number" &&
-                        typeof settings?.emoteWindow === "number" &&
-                        typeof settings?.userEmoteLimit === "number" &&
-                        typeof settings?.reactionSustainTime === "number") {
-                        ws.send(JSON.stringify({type: "settings", ok: true, oldSettings: this.settings, newSettings: settings}));
-                        this.settings = settings;
-                        console.log(`[ListenClient:${this.getIntent()}] Update settings: \nUser emote limit: ${this.settings.userEmoteLimit} Emote window: ${this.settings.emoteWindow} Emote threshold: ${this.settings.emoteThreshold} Reaction sustain time: ${this.settings.reactionSustainTime}`);
-                    } else {
-                        ws.send(JSON.stringify({type: "settings", ok: false, error: "Invalid settings object"}));
-                    }
-                }
-            } catch(err) {
-                console.error(err);
-            }
-        });
 
         ws.onerror = console.error;
 

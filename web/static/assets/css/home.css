@@ -88,3 +88,30 @@ iframe {
     border: none;
     border-radius: .3em;
 }
+
+.reaction-log {
+    display: flex;
+    margin: .8em 0;
+    align-items: center;
+}
+
+.reaction-log img {
+    display: block;
+    width: 4em;
+    height: 4em;
+}
+
+.reaction-log small {
+    display: block;
+    color: var(--secondary-text-color);
+    text-align: center;
+    margin-top: .3em;
+}
+
+.reaction-log .info {
+    background-color: rgba(255,255,255,0.1);
+    padding: .6em .8em;
+    border-radius: .3em;
+    flex-grow: 1;
+    margin: 0 0 0 1em;
+}

@@ -11,9 +11,7 @@
 </head>
 <body>
     <div class="wrapper">
-        <header>
-            <h1>Live Reactions</h1>
-        </header>
+        <%- include("../partials/header") %>
         <main>
             <section>
                 <h2>About Live Reactions</h2>
@@ -39,25 +37,27 @@
                         <a href="https://tms.to" target="_blank">Contribute to The Mod Squad's Patreon</a>
                     </li>
                 </ul>
+                <h3>Getting in Contact</h3>
+                <p>
+                    The best way to contact me is by adding me as a friend on Discord, @twijn.
+                    Alternatively, you can also <a href="mailto:twijn@twijn.net?subject=<%= encodeURIComponent('Live Reactions Support') %>">email me</a>.
+                </p>
             </section>
             <section>
-                <h2>Grabbing your API Token</h2>
+                <h2>Setting up Live Reactions</h2>
                 <p>
-                    Following <a href="https://discuss.dev.twitch.com/t/giving-broadcasters-control-concurrent-join-limits-for-irc-and-eventsub/54997" target="_blank">Twitch's concurrent join limits in 2024,</a>
-                    bots are severely limited on the channels they can/can't join without Moderator privileges on your channel.
-                    To bypass this limit, Live Reactions requests a token from the Twitch API to listen to chat on your account
-                    (and send milestone and record messages in chat). To grant Live Reactions access to this, please click the button below.
-                </p>
-                <p>
-                    After authorizing, you will be redirected to a URL generator to generate your OBS overlay url!
+                    Setting up Live Reactions is easy! Click the button below to authorize your account with the application,
+                    update the settings in the next page to your liking, and copy and paste the provided URL into a browser
+                    choice in your broadcasting software.
                 </p>
                 <a class="button button-full" href="/auth/twitch">
                     Authorize with Twitch
                 </a>
-                <p>
-                    <strong>Note: </strong> This application requires a token to use the application. Failing to authorize
+                <div class="alert alert-info">
+                    <strong>Note:</strong>
+                    This application requires a token to use the application. Failing to authorize
                     will result in an error when using the overlay.
-                </p>
+                </div>
             </section>
         </main>
         <%- include("../partials/footer") %>

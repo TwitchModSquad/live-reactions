@@ -27,11 +27,14 @@ authProvider.onRefresh(async (userId, tokenData) => {
         });
 });
 
-await TwitchToken.find({}).then(tokens => {
+await TwitchToken
+    .find({})
+    .populate(["user"])
+    .then(tokens => {
     console.log(`[TwitchAuth] Loading ${tokens.length} tokens`);
 
     tokens.forEach(token => {
-        authProvider.addUser(token.user, token.tokenData, ["chat:" + token.userLogin]);
+        authProvider.addUser(token.user._id, token.tokenData, ["chat:" + token.user.login]);
     });
 }, err => {
     console.error("[TwitchAuth] Failed to get tokens:");

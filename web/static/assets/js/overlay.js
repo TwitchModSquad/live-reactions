@@ -6,8 +6,8 @@ function startWebsocket() {
     ws = new WebSocket(WS_URI);
 
     ws.onopen = function() {
-        console.log("Sending channel to WS");
-        ws.send(JSON.stringify({type: "watch", channel}));
+        console.log("Sending authorization");
+        ws.send(JSON.stringify({type: "authorize", token: TOKEN_ID}));
     };
 
     ws.onmessage = function(event) {
@@ -18,12 +18,15 @@ function startWebsocket() {
                 return;
             }
 
-            if (data.type === "watch") {
-                if (data.ok) {
-                    ws.send(JSON.stringify({type: "settings", settings}));
-                } else {
+            if (data.type === "authorize") {
+                if (!data.ok) {
                     $("body").append('<div class="error"></div>').text(data.error);
                 }
+            } else if (data.type === "update-settings") {
+                $(".title").text(data.settings.title);
+                const body = $("body");
+                body.removeAttr("class");
+                body.addClass("font-" + data.settings.font);
             } else if (data.type === "live-reaction") {
                 $(".emote-info img").attr("src", data.emoteImageUrl);
                 $(".emote-info .streak span").text(data.count);
@@ -65,5 +68,7 @@ function startWebsocket() {
 }
 
 $(function () {
-    startWebsocket();
+    if (!$("body").hasClass("example")) {
+        startWebsocket();
+    }
 });

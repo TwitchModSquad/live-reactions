@@ -1,0 +1,32 @@
+.alert {
+    padding: .8em;
+    margin: .8em 0;
+    border-left: .2em solid transparent;
+    border-radius: .2em;
+}
+
+.alert strong {
+    display: block;
+}
+
+.alert.alert-info {
+    background-color: #07405a;
+    border-color: #2275a3;
+    color: #cfe4ef;
+}
+
+.alert.alert-danger {
+    background-color: #5a0707;
+    border-color: #a32222;
+    color: #efcfcf;
+}
+
+.alert.alert-success {
+    background-color: #1f5a07;
+    border-color: #22a324;
+    color: #cfefd2;
+}
+
+.alert.alert-clickable {
+    cursor: pointer;
+}

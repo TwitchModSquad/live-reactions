@@ -3,6 +3,9 @@ const router = new Router();
 
 import { authProvider, api } from "../../../twitch/auth.js";
 import TwitchToken from "../../../schemas/TwitchToken.js";
+import TwitchUser from "../../../schemas/TwitchUser.js";
+import Token from "../../../schemas/Token.js";
+import util from "../../../util.js";
 
 const TWITCH_SCOPES = [
     "chat:read",
@@ -10,6 +13,12 @@ const TWITCH_SCOPES = [
     "user:write:chat",
 ];
 export const TWITCH_URI = `https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=${encodeURIComponent(process.env.TWITCH_CLIENT_ID)}&redirect_uri=${encodeURIComponent(process.env.URI + "auth/twitch")}&scope=${encodeURIComponent(TWITCH_SCOPES.join(" "))}`;
+
+const MAX_TOKEN_REUSE = 24 * 60 * 60 * 1000;
+
+const logToken = token => {
+    return token.substring(token.length - 5);
+}
 
 router.get("/", async (req, res) => {
     if (req?.query?.code) {
@@ -23,14 +32,58 @@ router.get("/", async (req, res) => {
                 return;
             }
 
-            await TwitchToken.findOneAndUpdate({
-                user: tokenData.userId,
-            }, { $set: { userLogin: helixUser.name, tokenData }}, {
+            const twitchUser = await TwitchUser.findByIdAndUpdate(helixUser.id, {
+                $set: {
+                    login: helixUser.name,
+                    display_name: helixUser.displayName,
+                    type: helixUser.type,
+                    broadcaster_type: helixUser.broadcasterType,
+                    description: helixUser.description,
+                    profile_image_url: helixUser.profilePictureUrl,
+                    offline_image_url: helixUser.offlinePlaceholderUrl,
+                    updated_at: Date.now(),
+                },
+            }, {
                 upsert: true,
                 new: true,
             });
 
-            res.redirect(`/generator?login=${helixUser.name}`);
+            await TwitchToken.findOneAndUpdate({
+                user: twitchUser.id,
+            }, { $set: { tokenData }}, {
+                upsert: true,
+                new: true,
+            });
+
+            const validTokens = await Token.find({
+                user: twitchUser.id,
+                used_at: {
+                    $gte: Date.now() - MAX_TOKEN_REUSE,
+                },
+            });
+
+            let token = null;
+
+            if (validTokens.length > 0) {
+                token = validTokens[0];
+                console.log(`[Auth] Reusing token ${logToken(token.id)} for ${twitchUser.login}`);
+            } else {
+                while (!token) {
+                    const tokenId = util.stringGenerator(32);
+                    const existingToken = await Token.findById(tokenId);
+                    if (!existingToken) {
+                        token = await Token.create({
+                            _id: tokenId,
+                            user: twitchUser._id,
+                        });
+                    }
+                }
+                console.log(`[Auth] Created new token ${logToken(token.id)} for ${twitchUser.login}`);
+            }
+
+            res.cookie("token", token.id, {httpOnly: true, path: "/", secure: true, maxAge: token.created_at - Date.now() + MAX_TOKEN_REUSE});
+
+            res.redirect(`/settings`);
         }, err => {
             res.redirect(TWITCH_URI);
         });

@@ -1,4 +1,6 @@
 import {ListenClient} from "./ListenClient.js";
+import Token from "../schemas/Token.js";
+import TwitchUser from "../schemas/TwitchUser.js";
 
 const CLIENT_TIMEOUT = 5 * 60 * 1000;
 
@@ -10,14 +12,31 @@ class ClientManager {
      */
     activeClients = [];
 
-    constructor() {
-        setInterval(() => {
-            const clientsPendingClosure = this.activeClients.filter(x => x.inactiveSince && x.inactiveSince + CLIENT_TIMEOUT <= Date.now());
-            clientsPendingClosure.forEach(client => {
-                client.close();
-            });
+    async createClients() {
+        const users = await TwitchUser.find({});
+        users.forEach(user => {
+            const listenClient = new ListenClient(user, user.settings);
+            this.activeClients.push(listenClient);
+            listenClient.connect().catch(console.error);
+        });
+    }
 
-            this.activeClients = this.activeClients.filter(x => !x.inactiveSince || x.inactiveSince + CLIENT_TIMEOUT > Date.now());
+    /**
+     * Update ListenClient settings for a user
+     * @param userId {string}
+     * @param settings {any}
+     */
+    updateSettings(userId, settings) {
+        const listenClients = this.activeClients.filter(x => x.user.id === userId);
+        listenClients.forEach(client => {
+            client.updateSettings(settings);
+        });
+    }
+
+    constructor() {
+        this.createClients().catch(console.error);
+
+        setInterval(() => {
             this.activeClients.forEach(client => {
                 client.websockets.forEach(ws => {
                     ws.ws.ping();
@@ -29,23 +48,29 @@ class ClientManager {
     /**
      * Binds a WebSocket to an active ListenClient
      * @param ws {WebSocket}
-     * @param channel {string}
+     * @param tokenId {string}
      * @returns {Promise<void>}
      */
-    async bindWebsocket(ws, channel) {
-        channel = channel.toLowerCase();
+    async bindWebsocket(ws, tokenId) {
+        const token = await Token
+            .findById(tokenId)
+            .populate(["user"]);
 
-        let listenClient = this.activeClients.find(x => x.channel === channel);
+        if (!token) {
+            throw "Invalid token provided!";
+        }
 
-        // if (!listenClient) {
-            listenClient = new ListenClient(channel);
+        let listenClient = this.activeClients.find(x => x.user.id === token.user.id);
+
+        if (!listenClient) {
+            listenClient = new ListenClient(token.user, token.user.settings);
             try {
                 await listenClient.connect();
             } catch(err) {
                 throw err;
             }
             this.activeClients.push(listenClient);
-        // }
+        }
 
         listenClient.addWebsocket(ws);
     }

@@ -3,11 +3,7 @@ import mongoose from "mongoose";
 const schema = new mongoose.Schema({
     user: {
         type: String,
-        index: true,
-    },
-    userLogin: {
-        type: String,
-        index: true,
+        ref: "TwitchUser",
     },
     tokenData: {
         accessToken: {

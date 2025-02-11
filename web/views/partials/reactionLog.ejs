@@ -1,0 +1,21 @@
+<%
+const emote = reactionLog.getEmote();
+%><div class="reaction-log">
+    <% if (emote) { %>
+    <div class="emote">
+        <img src="<%= emote.toLink(2) %>" alt="<%= emote.code %>">
+        <small><%= emote.code %></small>
+    </div>
+    <% } %>
+    <p class="info">
+        <strong>Channel:</strong> <%= reactionLog.channelId.display_name %>
+        <br>
+        <strong>Count:</strong> <%= util.comma(reactionLog.count) %>
+        <br>
+        <strong>Date & Time:</strong>
+        <%= reactionLog.startTime.toLocaleDateString() %>
+        at <%= reactionLog.startTime.toLocaleTimeString() %>
+        <br>
+        <strong>Duration:</strong> <%= reactionLog.getStringDuration() %>
+    </p>
+</div>
